@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
-export default function Avatar({ url, size, onUpload }) {
-    const [avatarUrl, setAvatarUrl] = useState(null)
+export default function Avatar({ url, size, onUpload }: {url: string, size: number, onUpload: (event: React.ChangeEvent<HTMLInputElement>, filePath: string) => void}) {
+    const [avatarUrl, setAvatarUrl] = useState<null | string>(null)
     const [uploading, setUploading] = useState(false)
 
     useEffect(() => {
@@ -59,7 +59,7 @@ export default function Avatar({ url, size, onUpload }) {
                     style={{ height: size, width: size }}
                 />
             ) : (
-                <div className="avatar no-image" style={{ height: size, width: size }} />
+                <div className="avatar no-image bg-gray-100" style={{ height: size, width: size }} />
             )}
             <div style={{ width: size }}>
                 <label className="button primary block" htmlFor="single">

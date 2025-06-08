@@ -1,11 +1,23 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '../supabaseClient'
+import {useState, useEffect} from 'react'
+import {supabase} from '../supabaseClient'
 import Avatar from "./Avatar.tsx";
 import useAuth from "../contexts/auth/authContext.tsx";
 import type {AuthSession} from "../types.ts";
+import {Button} from "@/components/ui/button.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card.tsx";
 
 export default function Dashboard() {
-    const { session } = useAuth();
+    const {session} = useAuth();
     const [loading, setLoading] = useState(true)
     const [username, setUsername] = useState<null | string>(null)
     const [website, setWebsite] = useState<null | string>(null)
@@ -13,10 +25,11 @@ export default function Dashboard() {
 
     useEffect(() => {
         let ignore = false
+
         async function getProfile() {
             setLoading(true)
-            const { user } = session as AuthSession
-            const { data, error } = await supabase
+            const {user} = session as AuthSession
+            const {data, error} = await supabase
                 .from('profiles')
                 .select(`username, website, avatar_url`)
                 .eq('id', user.id)
@@ -44,9 +57,8 @@ export default function Dashboard() {
 
     async function updateProfile(event: React.FormEvent<HTMLFormElement>, avatarUrl: string) {
         event.preventDefault()
-
         setLoading(true)
-        const { user } = session as AuthSession
+        const {user} = session as AuthSession
 
         const updates = {
             id: user.id,
@@ -56,7 +68,7 @@ export default function Dashboard() {
             updated_at: new Date(),
         }
 
-        const { error } = await supabase.from('profiles').upsert(updates)
+        const {error} = await supabase.from('profiles').upsert(updates)
 
         if (error) {
             alert(error.message)
@@ -67,49 +79,54 @@ export default function Dashboard() {
     }
 
     return (
-        <form onSubmit={updateProfile} className="form-widget">
-            <Avatar
-                url={avatar_url}
-                size={150}
-                onUpload={(event: React.FormEvent<HTMLFormElement>, url: string) => {
-                    updateProfile(event, url)
-                }}
-            />
-            <div>
-                <label htmlFor="email">Email</label>
-                <input id="email" type="text" value={session?.user.email} disabled />
-            </div>
-            <div>
-                <label htmlFor="username">Name</label>
-                <input
-                    id="username"
-                    type="text"
-                    required
-                    value={username || ''}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                />
-            </div>
-            <div>
-                <label htmlFor="website">Website</label>
-                <input
-                    id="website"
-                    type="url"
-                    value={website || ''}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWebsite(e.target.value)}
-                />
-            </div>
-
-            <div>
-                <button className="button block primary" type="submit" disabled={loading}>
-                    {loading ? 'Loading ...' : 'Update'}
-                </button>
-            </div>
-
-            <div>
-                <button className="button block" type="button" onClick={() => supabase.auth.signOut()}>
-                    Sign Out
-                </button>
-            </div>
+        <form className={"w-full max-w-lg"} onSubmit={updateProfile}>
+            <Card className="w-full max-w-lg">
+                <CardHeader>
+                    <CardTitle>Edit Profile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col gap-6">
+                        <div className="grid gap-2">
+                            <Avatar
+                                url={avatar_url}
+                                size={150}
+                                onUpload={(event: React.FormEvent<HTMLFormElement>, url: string) => {
+                                    updateProfile(event, url)
+                                }}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" type="text" value={session?.user.email} disabled/>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="username">Name</Label>
+                            <Input
+                                id="username"
+                                type="text"
+                                required
+                                value={username || ''}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="website">Website</Label>
+                            <Input
+                                id="website"
+                                type="url"
+                                value={website || ''}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWebsite(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter className="flex-col gap-2">
+                    <Button className="button primary" type="submit" disabled={loading}>
+                        {loading ? 'Loading ...' : 'Update'}
+                    </Button>
+                </CardFooter>
+            </Card>
         </form>
+
     )
 }
