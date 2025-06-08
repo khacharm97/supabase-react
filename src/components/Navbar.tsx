@@ -18,6 +18,9 @@ export function Navbar() {
     const navigateToHome = () => {
         navigate('/')
     }
+    const navigateToDashboard = () => {
+        navigate('/dashboard')
+    }
     const navigateToLogin = () => {
         navigate('/signin')
     }
@@ -33,6 +36,11 @@ export function Navbar() {
                             <span onClick={navigateToHome} className={"cursor-pointer"}>Home</span>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
+                    {session?.user && <NavigationMenuItem>
+                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <span onClick={navigateToDashboard} className={"cursor-pointer"}>Dashboard</span>
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>}
                 </NavigationMenuList>
             </NavigationMenu>
             <div>
